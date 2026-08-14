@@ -13,9 +13,9 @@ enum
 	ERR_SELECT = 4
 };
 
-#define ERR_SOCKET_MSG "seddari: Fatal error\nsocket(): %s\n"
-#define ERR_BIND_MSG "seddari: Fatal error\nbind(): %s\n"
-#define ERR_LISTEN_MSG "seddari: Fatal error\nlisten(): %s\n"
-#define ERR_SELECT_MSG "seddari: Fatal error\nselect(): %s\n"
+#define ERROR_SOCKET_MSG "seddari: Fatal error\nsocket(): %s\n"
+#define ERROR_BIND_MSG "seddari: Fatal error\nbind(): %s\n"
+#define ERROR_LISTEN_MSG "seddari: Fatal error\nlisten(): %s\n"
+#define ERROR_SELECT_MSG "seddari: Fatal error\nselect(): %s\n"
 
 #endif

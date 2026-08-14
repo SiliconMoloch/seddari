@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-static void	add_to_list(t_server *server, t_client *client);
-static void	handle_message(t_server *server, const int32_t fd,  const char *msg);
+#include <unistd.h>
+#define BUFFER_SIZE 2048
 
 void	accept_new_client(t_server *server)
 {
@@ -28,69 +27,14 @@ void	accept_new_client(t_server *server)
 		server->max_fd = new_client->fd;
 	FD_SET(new_client->fd, &server->active);
 	new_client->id = server->next_id++;
+	new_client->next = NULL;
 	add_to_list(server, new_client);
 	sprintf(server->buffer, "Welcome client %d!\n", new_client->id);
 	broadcast(server, -1);
 	bzero(server->buffer, strlen(server->buffer));
 }
 
-static void	add_to_list(t_server *server, t_client *client)
-{
-	if (!server->head)
-	{
-		server->head = client;
-		return ;
-	}
-
-	t_client	*current;
-
-	current = server->head;
-	while (current->next)
-		current = current->next;
-	current->next = client;
-}
-
-t_client	*find_client(t_server *server, const int32_t fd_to_look_for)
-{
-	t_client	*index;
-
-	index = server->head;
-	while (index && index->fd ^ fd_to_look_for)
-		index = index->next;
-	return (index);
-}
-
-static void	handle_message(t_server *server, const int32_t fd, const char *msg)
-{
-	t_client	*client;
-
-	client = find_client(server, fd);
-	if (!client)
-		return ;
-	sprintf(server->buffer, "[%s]: %s", client->nickname, msg);
-	broadcast(server, -1);
-	bzero(server->buffer, strlen(server->buffer));
-}
-
-#include <unistd.h>
-
-static void	remove_client(t_server *server, const int32_t fd)
-{
-	t_client	*client;
-
-	client = find_client(server, fd);
-	if (!client)
-		return ;
-	FD_CLR(fd, &server->active);
-	close(fd);
-	sprintf(server->buffer, "Goodbye client %s! (id %d)\n", client->nickname, client->id);
-	broadcast(server, -1);
-	bzero(server->buffer, strlen(server->buffer));
-}
-
-#define BUFFER_SIZE 2048
-
-void	handle_client(t_server *server, const uint32_t fd)
+void	handle_client(t_server *server, const int32_t fd)
 {
 	char	recv_buffer[BUFFER_SIZE];
 
@@ -105,4 +49,19 @@ void	handle_client(t_server *server, const uint32_t fd)
 		remove_client(server, fd);
 	else
 		;
+}
+
+void	remove_client(t_server *server, const int32_t fd)
+{
+	t_client	*client;
+
+	client = find_client(server, fd);
+	if (!client)
+		return ;
+	sprintf(server->buffer, "Goodbye client %s! (id %d)\n", client->nickname, client->id);
+	broadcast(server, -1);
+	bzero(server->buffer, strlen(server->buffer));
+	FD_CLR(fd, &server->active);
+	close(fd);
+	remove_from_list(server, client);
 }

@@ -1,4 +1,4 @@
-SOURCES		= main.c start.c initalize_server.c socket.c bind.c listen.c run.c client.c broadcast.c
+SOURCES		= main.c start.c initalize_server.c socket.c bind.c listen.c run.c client.c client_utils.c message.c broadcast.c
 HEADERS		= error.h server.h client.h
 OBJECTS_DIR = .objects/
 DEPS_DIR	= .deps/

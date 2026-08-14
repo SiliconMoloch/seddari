@@ -20,14 +20,19 @@ typedef struct s_server
 	char				buffer[128];
 }	t_server;
 
-t_error	server_start(t_server *server);
-t_error	initalize_(t_server *server);
-t_error	run_(t_server *server);
-t_error	create_socket(t_server *server);
-t_error	bind_address(t_server *server);
-t_error	set_passive_socket(t_server *server);
-void	accept_new_client(t_server *server);
-void	handle_client(t_server *server, const uint32_t fd);
-void	broadcast(t_server *server, const int16_t except);
+t_error		server_start(t_server *server);
+t_error		initalize_(t_server *server);
+t_error		run_(t_server *server);
+t_error		create_socket(t_server *server);
+t_error		bind_address(t_server *server);
+t_error		set_passive_socket(t_server *server);
+void		accept_new_client(t_server *server);
+void		handle_client(t_server *server, const int32_t fd);
+void		remove_client(t_server *server, const int32_t fd);
+void		handle_message(t_server *server, const int32_t fd, const char *msg);
+void		broadcast(t_server *server, const int16_t except);
+void		add_to_list(t_server *server, t_client *client);
+void		remove_from_list(t_server *server, t_client *client);
+t_client	*find_client(t_server *server, const int32_t fd);
 
 #endif
