@@ -11,5 +11,6 @@ void	broadcast(t_server *server, const int16_t except)
 		if (fd ^ server->socket && fd ^ except && FD_ISSET(fd, &server->active))
 			send(fd, server->buffer, message_length, MSG_NOSIGNAL);
 	}
+	bzero(server->buffer, strlen(server->buffer));
 }
 

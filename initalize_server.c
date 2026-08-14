@@ -1,5 +1,4 @@
 #include "server.h"
-#include <errno.h>
 #include <unistd.h>
 
 t_error	initalize_(t_server *server)

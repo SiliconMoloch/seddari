@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#define BUFFER_SIZE 2048
+#include <errno.h>
 
 void	accept_new_client(t_server *server)
 {
@@ -31,7 +31,6 @@ void	accept_new_client(t_server *server)
 	add_to_list(server, new_client);
 	sprintf(server->buffer, "Welcome client %d!\n", new_client->id);
 	broadcast(server, -1);
-	bzero(server->buffer, strlen(server->buffer));
 }
 
 void	handle_client(t_server *server, const int32_t fd)
@@ -48,7 +47,11 @@ void	handle_client(t_server *server, const int32_t fd)
 	else if (!bytes_received)
 		remove_client(server, fd);
 	else
-		;
+	{
+		if (errno ^ EINTR)
+			remove_client(server, fd);
+		return ;
+	}
 }
 
 void	remove_client(t_server *server, const int32_t fd)
@@ -60,7 +63,6 @@ void	remove_client(t_server *server, const int32_t fd)
 		return ;
 	sprintf(server->buffer, "Goodbye client %s! (id %d)\n", client->nickname, client->id);
 	broadcast(server, -1);
-	bzero(server->buffer, strlen(server->buffer));
 	FD_CLR(fd, &server->active);
 	close(fd);
 	remove_from_list(server, client);

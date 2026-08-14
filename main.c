@@ -9,6 +9,7 @@ int	main(void)
 	bzero(&server, sizeof(t_server));
 	server.ip = 0x7F000001;
 	server.port = 8080;
+	server.stop = &g_stop;
 	switch (server_start(&server))
 	{
 		case (ERR_NONE):

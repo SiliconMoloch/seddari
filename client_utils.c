@@ -1,6 +1,5 @@
 #include "server.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 void	add_to_list(t_server *server, t_client *client)
 {
