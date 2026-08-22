@@ -1,7 +1,7 @@
 #include "server.h"
 #include <unistd.h>
 
-t_error	initalize_(t_server *server)
+t_error	initialize_(t_server *server)
 {
 	if (create_socket(server))
 		return (ERR_SOCKET);

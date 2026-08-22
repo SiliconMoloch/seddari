@@ -22,7 +22,7 @@ typedef struct s_server
 }	t_server;
 
 t_error		server_start(t_server *server);
-t_error		initalize_(t_server *server);
+t_error		initialize_(t_server *server);
 t_error		run_(t_server *server);
 t_error		create_socket(t_server *server);
 t_error		bind_address(t_server *server);

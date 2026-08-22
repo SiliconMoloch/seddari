@@ -1,12 +1,12 @@
-SOURCES		= main.c start.c initalize_server.c socket.c bind.c listen.c run.c client.c client_utils.c message.c broadcast.c signals.c release_ressources.c
+SOURCES		= main.c start.c initialize_server.c socket.c bind.c listen.c run.c client.c client_utils.c message.c broadcast.c signals.c release_ressources.c
 HEADERS		= error.h server.h client.h signals.h
 OBJECTS_DIR = .objects/
 DEPS_DIR	= .deps/
 OBJECTS     = ${SOURCES:%.c=${OBJECTS_DIR}%.o}
 DEPS		= ${SOURCES:%.c=${DEPS_DIR}%.d}
 NAME		= seddari
-CC         = cc
-CC_FLAGS   = -Wall -Wextra -Werror
+CC			= cc
+CC_FLAGS	= -Wall -Wextra -Werror
 DEPS_FLAGS	= -MT $@ -MMD -MP -MF $(DEPS_DIR)$*.d
 
 all: ${NAME}
