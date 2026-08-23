@@ -15,7 +15,7 @@ void	handle_message(t_server *server, const int32_t fd, const char *r)
 	if (!client)
 		return ;
 	strcpy(client->message, r);
-	sprintf(server->buffer, "[%s]: %s", client->nickname, client->message);
+	//sprintf(server->buffer, "[%s]: %s", client->nickname, client->message);
 	broadcast(server, -1);
 }
 
