@@ -31,6 +31,19 @@ NAME            := seddari
 CC              := cc
 CC_FLAGS        := -Wall -Wextra -Werror -I$(HEADERS_DIR)
 
+NCURSES_DIR		:= external/ncurses
+
+ifeq ($(shell pkg-config --exists ncurses && echo yes),yes)
+CC_FLAGS		+= $(shell pkg-config --cflags ncurses)
+LD_FLAGS		+= $(shell pkg-config --libs ncurses)
+else
+CC_FLAGS		+= -I$(NCURSES_DIR)/include
+LD_FLAGS		+= $(NCURSES_DIR)/lib/libncurses.a
+NCURSES_LIB		:= $(NCURSES_DIR)/lib/libncurses.a
+$(NCURSES_LIB):
+		@$(MAKE) -C $(NCURSES_DIR)
+endif
+
 .PHONY: all clean fclean re
 
 all: $(NAME)
@@ -40,8 +53,8 @@ $(OBJECTS_DIR)%.o: $(SOURCES_DIR)%.c | $(OBJECTS_DIR) $(DEPS_DIR)
 	@echo "Compiling $< ..."
 	@$(CC) $(CC_FLAGS) -MMD -MP -MF $(DEPS_DIR)$*.d -MT $@ -c $< -o $@
 
-$(NAME): $(OBJECTS) $(HEADERS)
-	@$(CC) $(CC_FLAGS) $(OBJECTS) -o $(NAME)
+$(NAME): $(OBJECTS) $(HEADERS) $(NCURSES_LIB)
+	@$(CC) $(CC_FLAGS) $(OBJECTS) $(LD_FLAGS) -o $(NAME)
 	@echo "$(NAME) has been successfully generated."
 
 $(OBJECTS_DIR) $(DEPS_DIR):
