@@ -7,6 +7,12 @@
 
 #define BUFFER_SIZE 1024
 
+void			accept_new_client(t_server *server);
+void			handle_client(t_server *server, const int fd);
+static uint8_t	append_to_recv_buffer(t_client *client, const char *buffer, const ssize_t bytes_received);
+static void		process_recv_buffer(t_server *server, t_client *client);
+void			remove_client(t_server *server, const int fd);
+
 void	accept_new_client(t_server *server)
 {
 	t_client		*new_client;
@@ -37,33 +43,88 @@ void	accept_new_client(t_server *server)
 
 void	handle_client(t_server *server, const int fd)
 {
-	char			recv_buffer[BUFFER_SIZE];
-	const ssize_t	bytes_received = recv(fd, recv_buffer, BUFFER_SIZE - 1, 0);
+	t_client		*client;
+	char			buffer[BUFFER_SIZE];
+	const ssize_t	bytes_received = recv(fd, buffer, BUFFER_SIZE - 1, 0);
 	
 	if (bytes_received > 0)
 	{
-		recv_buffer[bytes_received] = '\0';
-		handle_message(server, fd, recv_buffer);
+		client = find_client(server, fd);
+		if (!client)
+			return ;
+		if (!append_to_recv_buffer(client, buffer, bytes_received))
+		{
+			remove_client(server, fd);
+			return ;
+		}
+		process_recv_buffer(server, client);
 	}
 	else if (!bytes_received)
 		remove_client(server, fd);
-	else
-	{
-		if (errno ^ EINTR)
+	else if (errno ^ EINTR)
 			remove_client(server, fd);
-		return ;
+}
+
+static uint8_t append_to_recv_buffer(t_client *client, const char *buffer, const ssize_t bytes_received)
+{
+	char	*new_buffer;
+	size_t	new_len;	
+
+	new_len = client->recv_size + bytes_received;
+	new_buffer = realloc(client->recv_buffer, new_len + 1);
+	if (!new_buffer)
+		return (0);
+	client->recv_buffer = new_buffer;
+	memcpy(client->recv_buffer + client->recv_size, buffer, bytes_received);
+	client->recv_size += bytes_received;
+	client->recv_buffer[client->recv_size] = '\0';
+	return (1);
+}
+
+static void	process_recv_buffer(t_server *server, t_client *client)
+{
+	char	*newline;
+	char	*message;
+	size_t	message_length;
+
+	while (client->recv_buffer)
+	{
+		newline = strchr(client->recv_buffer, '\n');
+		if (!newline)
+			return ;
+		message_length = newline - client->recv_buffer + 1;
+		message = calloc(message_length + 1, sizeof(char));
+		if (!message)
+			return ;
+		memcpy(message, client->recv_buffer, message_length);
+		message[message_length] = '\0';
+		handle_message(server, client->fd, message);
+		free(message);
+		memmove(client->recv_buffer,
+			client->recv_buffer + message_length,
+			client->recv_size - message_length);
+		client->recv_size -= message_length;
+		client->recv_buffer[client->recv_size] = '\0';
+		if (!client->recv_size)
+		{
+			free(client->recv_buffer);
+			client->recv_buffer = NULL;
+		}
 	}
 }
+
 
 void	remove_client(t_server *server, const int fd)
 {
 	t_client	*client;
+	uint64_t	client_id;
+	char		nickname[32];
 
 	client = find_client(server, fd);
 	if (!client)
 		return ;
-	snprintf(server->buffer, sizeof(server->buffer), "Goodbye client %s! (id %lu)\n", client->nickname, client->id);
-	broadcast(server, -1);
+	client_id = client->id;
+	memcpy(nickname, client->nickname, sizeof(nickname));
 	FD_CLR(fd, &server->active);
 	close(fd);
 	if (fd == server->max_fd)
@@ -72,4 +133,6 @@ void	remove_client(t_server *server, const int fd)
 			--server->max_fd;
 	}
 	remove_from_list(server, client);
+	snprintf(server->buffer, sizeof(server->buffer), "Goodbye client %s! (id %lu)\n", nickname[0] ? nickname : "(unnamed)", client_id);
+	broadcast(server, -1);
 }

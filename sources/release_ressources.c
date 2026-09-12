@@ -14,6 +14,7 @@ void	release_ressources(t_server *server)
 		server->head = server->head->next;
 		close(to_free->fd);
 		free(to_free->message);
+		free(to_free->recv_buffer);
 		free(to_free);
 	}
 }

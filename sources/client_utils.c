@@ -28,6 +28,7 @@ void	remove_from_list(t_server *server, t_client *client)
 		return ;
 	*current = client->next;
 	free(client->message);
+	free(client->recv_buffer);
 	free(client);
 }
 
