@@ -24,5 +24,8 @@ int	main(int argc, const char *argv[])
 		case (ERR_LISTEN):
 			dprintf(2, ERROR_LISTEN_MSG, strerror(server.errno_code));
 			return (1);
+		case (ERR_SELECT):
+			dprintf(2, ERROR_SELECT_MSG, strerror(server.errno_code));
+			return (1);
 	}
 }

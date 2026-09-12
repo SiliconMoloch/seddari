@@ -1,5 +1,6 @@
 #include "server.h"
 #include <errno.h>
+#include <unistd.h>
 
 static void	process_fds(t_server *server);
 
@@ -18,6 +19,7 @@ t_error	run_(t_server *server)
 			if (errno == EINTR)
 				continue ;
 			server->errno_code = errno;
+			close(server->socket);
 			return (ERR_SELECT);
 		}
 		process_fds(server);
