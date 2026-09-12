@@ -1,6 +1,0 @@
-[submodule "external"]
-	path = external/ncurses
-	url = https://github.com/mirror/ncurses.git
-[submodule "external/ncurses"]
-	path = external/ncurses
-	url = https://github.com/mirror/ncurses.git
