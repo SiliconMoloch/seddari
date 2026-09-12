@@ -74,14 +74,8 @@ void	handle_client(t_server *server, const int fd)
 
 static uint8_t append_to_recv_buffer(t_client *client, const char *buffer, const ssize_t bytes_received)
 {
-	char	*new_buffer;
-	size_t	new_len;	
-
-	new_len = client->recv_size + bytes_received;
-	new_buffer = realloc(client->recv_buffer, new_len + 1);
-	if (!new_buffer)
+	if (client->recv_size + bytes_received >= sizeof(client->recv_buffer))
 		return (0);
-	client->recv_buffer = new_buffer;
 	memcpy(client->recv_buffer + client->recv_size, buffer, bytes_received);
 	client->recv_size += bytes_received;
 	client->recv_buffer[client->recv_size] = '\0';
@@ -94,7 +88,7 @@ static void	process_recv_buffer(t_server *server, t_client *client)
 	char	*message;
 	size_t	message_length;
 
-	while (client->recv_buffer)
+	while (1)
 	{
 		newline = strchr(client->recv_buffer, '\n');
 		if (!newline)
@@ -112,11 +106,6 @@ static void	process_recv_buffer(t_server *server, t_client *client)
 			client->recv_size - message_length);
 		client->recv_size -= message_length;
 		client->recv_buffer[client->recv_size] = '\0';
-		if (!client->recv_size)
-		{
-			free(client->recv_buffer);
-			client->recv_buffer = NULL;
-		}
 	}
 }
 

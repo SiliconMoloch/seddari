@@ -11,7 +11,7 @@ typedef struct s_client
 	int				fd;
 	uint64_t		id;
 	char			*message;
-	char			*recv_buffer;
+	char			recv_buffer[256];
 	size_t			recv_size;
 	char			nickname[32];
 	struct s_client	*next;
