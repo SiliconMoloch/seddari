@@ -6,32 +6,44 @@
 #include <arpa/inet.h>
 
 void        handle_arguments(t_server *server, int argc, const char *argv[]);
-static bool help_flag(const char *arg);
+
+static bool help_option(const char *arg);
+static bool address_option(const char *arg);
+static bool port_option(const char *arg);
+
 static void print_help(const char *program_name);
-static bool address_flag(const char *arg);
-static void handle_address_flag(t_server *server, const char *arg);
-static bool port_flag(const char *arg);
-static void handle_port_flag(t_server *server, const char *arg);
-static void handle_unknown_flag(const char *arg);
+static void handle_address_option(t_server *server, const char *arg);
+static void handle_port_option(t_server *server, const char *arg);
+static void handle_unknown_option(const char *arg);
 
 void    handle_arguments(t_server *server, int argc, const char *argv[])
 {
     for (int i = 1; i < argc; ++i)
     {
-        if (help_flag(argv[i]))
+        if (help_option(argv[i]))
             print_help(argv[0]);
-        else if (address_flag(argv[i]))
-            handle_address_flag(server, argv[++i]);
-        else if (port_flag(argv[i]))
-            handle_port_flag(server, argv[++i]);
+        else if (address_option(argv[i]))
+            handle_address_option(server, argv[++i]);
+        else if (port_option(argv[i]))
+            handle_port_option(server, argv[++i]);
         else
-            handle_unknown_flag(argv[i]);
+            handle_unknown_option(argv[i]);
     }
 }
 
-static bool help_flag(const char *arg)
+static bool help_option(const char *arg)
 {
     return (!strcmp(arg, "-h") || !strcmp(arg, "--help"));
+}
+
+static bool address_option(const char *arg)
+{
+    return (!strcmp(arg, "-a") || !strcmp(arg, "--address"));
+}
+
+static bool port_option(const char *arg)
+{
+    return (!strcmp(arg, "-p") || !strcmp(arg, "--port"));
 }
 
 static void print_help(const char *program_name)
@@ -44,12 +56,7 @@ static void print_help(const char *program_name)
     exit(0);
 }
 
-static bool address_flag(const char *arg)
-{
-    return (!strcmp(arg, "-a") || !strcmp(arg, "--address"));
-}
-
-static void handle_address_flag(t_server *server, const char *arg)
+static void handle_address_option(t_server *server, const char *arg)
 {
     if (!arg || !*arg)
     {
@@ -68,12 +75,7 @@ static void handle_address_flag(t_server *server, const char *arg)
     }
 }
 
-static bool port_flag(const char *arg)
-{
-    return (!strcmp(arg, "-p") || !strcmp(arg, "--port"));
-}
-
-static void handle_port_flag(t_server *server, const char *arg)
+static void handle_port_option(t_server *server, const char *arg)
 {
     if (!arg || !*arg)
     {
@@ -92,7 +94,7 @@ static void handle_port_flag(t_server *server, const char *arg)
     server->port = (uint16_t)port;
 }
 
-static void handle_unknown_flag(const char *arg)
+static void handle_unknown_option(const char *arg)
 {
     fprintf(stderr, "Unknown option: %s\n", arg);
     exit(1);
