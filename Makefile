@@ -13,7 +13,7 @@ SOURCES         := \
                    $(SOURCES_DIR)message.c \
                    $(SOURCES_DIR)broadcast.c \
                    $(SOURCES_DIR)signals.c \
-                   $(SOURCES_DIR)release_ressources.c
+                   $(SOURCES_DIR)release_resources.c
 
 HEADERS_DIR     := includes/
 HEADERS         := \

@@ -22,7 +22,7 @@ t_error	run_(t_server *server)
 		}
 		process_fds(server);
 	}
-	release_ressources(server);
+	release_resources(server);
 	return (ERR_NONE);
 }
 

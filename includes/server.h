@@ -35,7 +35,7 @@ void		handle_message(t_server *server, const int fd, const char *r);
 void		broadcast(t_server *server, const int except);
 void		add_to_list(t_server *server, t_client *client);
 void		remove_from_list(t_server *server, t_client *client);
-void		release_ressources(t_server *server);
+void		release_resources(t_server *server);
 t_client	*find_client(t_server *server, const int fd);
 
 #endif

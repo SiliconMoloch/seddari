@@ -3,7 +3,7 @@
 
 #include "server.h"
 
-void	release_ressources(t_server *server)
+void	release_resources(t_server *server)
 {
 	t_client	*to_free;
 

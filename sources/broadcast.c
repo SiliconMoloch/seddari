@@ -11,7 +11,7 @@ void	broadcast(t_server *server, const int except)
 	ssize_t			sent;
 	size_t			total_sent;
 
-	remove_count = -1;
+	remove_count = 0;
 	for (int fd = 0; fd <= server->max_fd; ++fd)
 	{
 		if (fd ^ server->socket && fd ^ except && FD_ISSET(fd, &server->active))
@@ -23,7 +23,10 @@ void	broadcast(t_server *server, const int except)
 				if (sent < 0)
 				{
 					if (errno ^ EINTR && remove_count < FD_SETSIZE)
-						to_remove[++remove_count] = fd;
+					{
+						to_remove[remove_count] = fd;
+						++remove_count;
+					}
 					break ;
 				}
 				total_sent += (size_t)sent;
