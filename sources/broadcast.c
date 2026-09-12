@@ -20,7 +20,7 @@ void	broadcast(t_server *server, const int except)
 			while (total_sent < message_length)
 			{
 				sent = send(fd, server->buffer + total_sent, message_length - total_sent, MSG_NOSIGNAL);
-				if (sent <= 0)
+				if (sent < 0)
 				{
 					if (errno ^ EINTR && remove_count < FD_SETSIZE)
 					{
@@ -28,6 +28,14 @@ void	broadcast(t_server *server, const int except)
 						++remove_count;
 					}
 					break ;
+				}
+				if (!sent)
+				{
+					if (remove_count < FD_SETSIZE)
+					{
+						to_remove[remove_count] = fd;
+						++remove_count;
+					}
 				}
 				total_sent += (size_t)sent;
 			}

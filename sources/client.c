@@ -31,6 +31,12 @@ void	accept_new_client(t_server *server)
 		free(new_client);
 		return ;
 	}
+	else if (new_client->fd >= FD_SETSIZE)
+	{
+		close(new_client->fd);
+		free(new_client);
+		return ;
+	}
 	if (new_client->fd > server->max_fd)
 		server->max_fd = new_client->fd;
 	FD_SET(new_client->fd, &server->active);
