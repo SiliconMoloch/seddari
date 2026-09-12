@@ -11,6 +11,7 @@ SOURCES         := \
                    $(SOURCES_DIR)client.c \
                    $(SOURCES_DIR)client_utils.c \
                    $(SOURCES_DIR)message.c \
+                   $(SOURCES_DIR)time.c \
                    $(SOURCES_DIR)broadcast.c \
                    $(SOURCES_DIR)signals.c \
                    $(SOURCES_DIR)release_resources.c

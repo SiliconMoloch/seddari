@@ -18,6 +18,7 @@ typedef struct s_server
 	struct sockaddr_in					address;
 	uint32_t							ip;
 	uint16_t							port;
+	char								timestamp[22];
 	char								buffer[128];
 }	t_server;
 
@@ -28,6 +29,7 @@ t_error		create_socket(t_server *server);
 t_error		bind_address(t_server *server);
 t_error		set_passive_socket(t_server *server);
 void		handle_arguments(t_server *server, int argc, const char *argv[]);
+void		update_timestamp(t_server *server);
 void		accept_new_client(t_server *server);
 void		handle_client(t_server *server, const int fd);
 void		remove_client(t_server *server, const int fd);

@@ -22,7 +22,8 @@ void	handle_message(t_server *server, const int fd, const char *r)
 	free(client->message);
 	client->message = new_message;
 	strcpy(client->message, r);
-	snprintf(server->buffer, sizeof(server->buffer), "[%s]: %s", client->nickname, client->message);
+	update_timestamp(server);
+	snprintf(server->buffer, sizeof(server->buffer), "%s [%s]: %s", server->timestamp, client->nickname, client->message);
 	broadcast(server, -1);
 }
 

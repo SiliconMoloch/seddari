@@ -37,13 +37,14 @@ void	accept_new_client(t_server *server)
 		free(new_client);
 		return ;
 	}
+	update_timestamp(server);
 	if (new_client->fd > server->max_fd)
 		server->max_fd = new_client->fd;
 	FD_SET(new_client->fd, &server->active);
 	new_client->id = server->next_id++;
 	new_client->next = NULL;
 	add_to_list(server, new_client);
-	snprintf(server->buffer, sizeof(server->buffer), "Welcome client %lu!\n", new_client->id);
+	snprintf(server->buffer, sizeof(server->buffer), "%s Welcome client %lu!\n",server->timestamp, new_client->id);
 	broadcast(server, -1);
 }
 
@@ -139,6 +140,7 @@ void	remove_client(t_server *server, const int fd)
 			--server->max_fd;
 	}
 	remove_from_list(server, client);
-	snprintf(server->buffer, sizeof(server->buffer), "Goodbye client %s! (id %lu)\n", nickname[0] ? nickname : "(unnamed)", client_id);
+	update_timestamp(server);
+	snprintf(server->buffer, sizeof(server->buffer), "%s Goodbye client %s! (id %lu)\n", server->timestamp, nickname[0] ? nickname : "(unnamed)", client_id);
 	broadcast(server, -1);
 }
