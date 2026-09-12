@@ -1,16 +1,24 @@
 #include "server.h"
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
-void	broadcast(t_server *server, const int16_t except)
+void	broadcast(t_server *server, const int except)
 {
-	const uint64_t	message_length = strlen(server->buffer);
+	const size_t	message_length = strlen(server->buffer);
+	ssize_t			bytes_sent;
 
-	for (uint64_t fd = 0; fd <= server->max_fd; ++fd)
+	for (int fd = 0; fd <= server->max_fd; ++fd)
 	{
 		if (fd ^ server->socket && fd ^ except && FD_ISSET(fd, &server->active))
-			send(fd, server->buffer, message_length, MSG_NOSIGNAL);
+		{
+			bytes_sent = send(fd, server->buffer, message_length, MSG_NOSIGNAL);
+			if (bytes_sent < 0)
+			{
+				if (errno ^ EINTR)
+					remove_client(server, fd);
+				continue ;
+			}
+		}
 	}
-	bzero(server->buffer, strlen(server->buffer));
 }
-

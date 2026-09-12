@@ -4,7 +4,7 @@
 
 t_error	create_socket(t_server *server)
 {
-	int32_t	opt;
+	int	opt;
 
 	server->socket = socket(AF_INET, SOCK_STREAM, 0);
 	opt = 1;

@@ -13,6 +13,7 @@ void	release_ressources(t_server *server)
 		to_free = server->head;
 		server->head = server->head->next;
 		close(to_free->fd);
+		free(to_free->message);
 		free(to_free);
 	}
 }

@@ -40,7 +40,7 @@ t_error	run_(t_server *server)
 
 static void	process_fds(t_server *server)
 {
-	for (int32_t fd = 0; fd <= server->max_fd; ++fd)
+	for (int fd = 0; fd <= server->max_fd; ++fd)
 	{
 		if (FD_ISSET(fd, &server->readfds))
 		{

@@ -27,10 +27,11 @@ void	remove_from_list(t_server *server, t_client *client)
 	if (!*current)
 		return ;
 	*current = client->next;
+	free(client->message);
 	free(client);
 }
 
-t_client	*find_client(t_server *server, const int32_t fd_to_look_for)
+t_client	*find_client(t_server *server, const int fd_to_look_for)
 {
 	t_client	*index;
 
