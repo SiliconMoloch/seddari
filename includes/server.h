@@ -27,6 +27,7 @@ t_error		run_(t_server *server);
 t_error		create_socket(t_server *server);
 t_error		bind_address(t_server *server);
 t_error		set_passive_socket(t_server *server);
+void		handle_arguments(t_server *server, int argc, const char *argv[]);
 void		accept_new_client(t_server *server);
 void		handle_client(t_server *server, const int fd);
 void		remove_client(t_server *server, const int fd);
