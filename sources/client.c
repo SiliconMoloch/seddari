@@ -31,7 +31,7 @@ void	accept_new_client(t_server *server)
 		free(new_client);
 		return ;
 	}
-	else if (new_client->fd >= FD_SETSIZE)
+	else if (new_client->fd >= FD_SETSIZE || set_non_blocking_client(new_client->fd) ^ CLIENT_ERR_NONE)
 	{
 		close(new_client->fd);
 		free(new_client);

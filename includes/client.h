@@ -17,4 +17,6 @@ typedef struct s_client
 	struct s_client	*next;
 }	t_client;
 
+t_client_error	set_non_blocking_client(const int fd);
+
 #endif

@@ -29,6 +29,7 @@ t_error			run_(t_server *server);
 t_error			create_socket(t_server *server);
 t_error			bind_address(t_server *server);
 t_error			set_passive_socket(t_server *server);
+t_error			set_non_blocking_server(const int fd, uint16_t *errno_code);
 t_error			handle_commands(t_server *server, t_client *client);
 void			handle_arguments(t_server *server, int argc, const char *argv[]);
 void			update_timestamp(t_server *server);
