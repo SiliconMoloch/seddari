@@ -35,6 +35,7 @@ typedef uint8_t t_command_status;
 enum
 {
     CMD_STATUS_NONE = 0,
+    CMD_STATUS_HELP_SENT,
     CMD_STATUS_NICKNAME_CHANGED,
     CMD_STATUS_CLIENT_LIST_SENT,
     CMD_STATUS_CLIENT_QUIT
