@@ -55,23 +55,26 @@ void	handle_client(t_server *server, const int fd)
 	char			buffer[BUFFER_SIZE];
 	const ssize_t	bytes_received = recv(fd, buffer, BUFFER_SIZE - 1, 0);
 	
-	if (bytes_received > 0)
+	switch (bytes_received)
 	{
-		client = find_client(server, fd);
-		if (!client)
+		case (-1):
+			if (errno ^ EINTR && errno ^ EAGAIN && errno ^ EWOULDBLOCK)
+				remove_client(server, fd);
 			return ;
-		if (!append_to_recv_buffer(client, buffer, bytes_received))
-		{
+		case (0):
 			remove_client(server, fd);
 			return ;
-		}
-		process_recv_buffer(server, client);
-
+		default:
+			client = find_client(server, fd);
+			if (!client)
+				return ;
+			if (!append_to_recv_buffer(client, buffer, bytes_received))
+			{
+				remove_client(server, fd);
+				return ;
+			}
+			process_recv_buffer(server, client);
 	}
-	else if (!bytes_received)
-		remove_client(server, fd);
-	else if (errno ^ EINTR)
-			remove_client(server, fd);
 }
 
 static uint8_t append_to_recv_buffer(t_client *client, const char *buffer, const ssize_t bytes_received)
