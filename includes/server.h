@@ -20,7 +20,7 @@ typedef struct s_server
 	uint32_t							ip;
 	uint16_t							port;
 	char								timestamp[22];
-	char								buffer[256];
+	char								log_buffer[256];
 }	t_server;
 
 t_error			server_start(t_server *server);

@@ -27,7 +27,7 @@ t_client_error	handle_message(t_server *server, const int fd, const char *r)
 	if (command_status ^ CMD_STATUS_NONE)
 		return (CLIENT_ERR_NONE);
 	update_timestamp(server);
-	snprintf(server->buffer, sizeof(server->buffer), "%s [%s]: %s", server->timestamp, client->nickname, client->message);
+	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s [%s]: %s", server->timestamp, client->nickname, client->message);
 	broadcast(server, -1);
 	return (CLIENT_ERR_NONE);
 }

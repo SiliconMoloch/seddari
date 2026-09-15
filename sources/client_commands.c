@@ -38,13 +38,13 @@ t_command_status    handle_commands(t_server *server, t_client *client)
 
 static void handle_help_command(t_server *server, t_client *client)
 {
-    snprintf(server->buffer, sizeof(server->buffer),
+    snprintf(server->log_buffer, sizeof(server->log_buffer),
         "Available commands:\n"
         "/help - Show this help message\n"
         "/nick <nickname> - Change your nickname\n"
         "/list - List all connected clients\n"
         "/quit - Disconnect from the server\n");
-    send(client->fd, server->buffer, strlen(server->buffer), 0);
+    send(client->fd, server->log_buffer, strlen(server->log_buffer), 0);
 }
 
 static void handle_nick_command(t_server *server, t_client *client)
@@ -58,14 +58,14 @@ static void handle_nick_command(t_server *server, t_client *client)
     new_nickname_len = strlen(new_nickname);
     if (new_nickname_len >= sizeof(client->nickname))
     {
-        snprintf(server->buffer, sizeof(server->buffer), "Nickname too long. Max length is %zu characters.\n", sizeof(client->nickname) - 1);
-        send(client->fd, server->buffer, strlen(server->buffer), 0);
+        snprintf(server->log_buffer, sizeof(server->log_buffer), "Nickname too long. Max length is %zu characters.\n", sizeof(client->nickname) - 1);
+        send(client->fd, server->log_buffer, strlen(server->log_buffer), 0);
         return ;
     }
     memcpy(client->nickname, new_nickname, new_nickname_len);
     client->nickname[new_nickname_len - 1] = '\0';
     update_timestamp(server);
-    snprintf(server->buffer, sizeof(server->buffer), "%s %s changed their nickname to %s", server->timestamp, old_nickname, new_nickname);
+    snprintf(server->log_buffer, sizeof(server->log_buffer), "%s %s changed their nickname to %s", server->timestamp, old_nickname, new_nickname);
     broadcast(server, -1);
 }
 

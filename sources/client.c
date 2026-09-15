@@ -45,7 +45,7 @@ void	accept_new_client(t_server *server)
 	add_to_list(server, new_client);
 	snprintf(new_client->nickname, sizeof(new_client->nickname), "Client %lu", new_client->id);
 	update_timestamp(server);
-	snprintf(server->buffer, sizeof(server->buffer), "%s Welcome client %lu!\n",server->timestamp, new_client->id);
+	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s Welcome client %lu!\n",server->timestamp, new_client->id);
 	broadcast(server, -1);
 }
 
@@ -140,6 +140,6 @@ void	remove_client(t_server *server, const int fd)
 	}
 	remove_from_list(server, client);
 	update_timestamp(server);
-	snprintf(server->buffer, sizeof(server->buffer), "%s Goodbye client %s! (id %lu)\n", server->timestamp, nickname[0] ? nickname : "(unnamed)", client_id);
+	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s Goodbye client %s! (id %lu)\n", server->timestamp, nickname[0] ? nickname : "(unnamed)", client_id);
 	broadcast(server, -1);
 }
