@@ -66,6 +66,7 @@ void	handle_client(t_server *server, const int fd)
 			return ;
 		}
 		process_recv_buffer(server, client);
+
 	}
 	else if (!bytes_received)
 		remove_client(server, fd);
@@ -85,9 +86,10 @@ static uint8_t append_to_recv_buffer(t_client *client, const char *buffer, const
 
 static void	process_recv_buffer(t_server *server, t_client *client)
 {
-	char	*newline;
-	char	*message;
-	size_t	message_length;
+	char		*newline;
+	char		*message;
+	size_t		message_length;
+	const int	fd = client->fd;
 
 	while (1)
 	{
@@ -102,6 +104,9 @@ static void	process_recv_buffer(t_server *server, t_client *client)
 		message[message_length] = '\0';
 		handle_message(server, client->fd, message);
 		free(message);
+		client = find_client(server, fd);
+		if (!client)
+			return ;
 		memmove(client->recv_buffer,
 			client->recv_buffer + message_length,
 			client->recv_size - message_length);
@@ -122,6 +127,7 @@ void	remove_client(t_server *server, const int fd)
 		return ;
 	client_id = client->id;
 	memcpy(nickname, client->nickname, sizeof(nickname));
+	FD_CLR(fd, &server->readfds);
 	FD_CLR(fd, &server->active);
 	close(fd);
 	if (fd == server->max_fd)

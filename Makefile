@@ -10,6 +10,7 @@ SOURCES         := \
                    $(SOURCES_DIR)run.c \
                    $(SOURCES_DIR)client.c \
                    $(SOURCES_DIR)client_utils.c \
+                   ${SOURCES_DIR}client_commands.c \
                    $(SOURCES_DIR)message.c \
                    $(SOURCES_DIR)time.c \
                    $(SOURCES_DIR)broadcast.c \
@@ -18,7 +19,7 @@ SOURCES         := \
 
 HEADERS_DIR     := includes/
 HEADERS         := \
-                   $(HEADERS_DIR)error.h \
+                   $(HEADERS_DIR)status.h \
                    $(HEADERS_DIR)server.h \
                    $(HEADERS_DIR)client.h \
                    $(HEADERS_DIR)signals.h
