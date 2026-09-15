@@ -9,8 +9,6 @@
 
 void			accept_new_client(t_server *server);
 void			handle_client(t_server *server, const int fd);
-static uint8_t	append_to_recv_buffer(t_client *client, const char *buffer, const ssize_t bytes_received);
-static void		process_recv_buffer(t_server *server, t_client *client);
 void			remove_client(t_server *server, const int fd);
 
 void	accept_new_client(t_server *server)
@@ -68,7 +66,7 @@ void	handle_client(t_server *server, const int fd)
 			client = find_client(server, fd);
 			if (!client)
 				return ;
-			if (!append_to_recv_buffer(client, buffer, bytes_received))
+			if (append_to_recv_buffer(client, buffer, bytes_received))
 			{
 				remove_client(server, fd);
 				return ;
@@ -76,48 +74,6 @@ void	handle_client(t_server *server, const int fd)
 			process_recv_buffer(server, client);
 	}
 }
-
-static uint8_t append_to_recv_buffer(t_client *client, const char *buffer, const ssize_t bytes_received)
-{
-	if (client->recv_size + bytes_received >= sizeof(client->recv_buffer))
-		return (0);
-	memcpy(client->recv_buffer + client->recv_size, buffer, bytes_received);
-	client->recv_size += bytes_received;
-	client->recv_buffer[client->recv_size] = '\0';
-	return (1);
-}
-
-static void	process_recv_buffer(t_server *server, t_client *client)
-{
-	char		*newline;
-	char		*message;
-	size_t		message_length;
-	const int	fd = client->fd;
-
-	while (1)
-	{
-		newline = strchr(client->recv_buffer, '\n');
-		if (!newline)
-			return ;
-		message_length = newline - client->recv_buffer + 1;
-		message = calloc(message_length + 1, sizeof(char));
-		if (!message)
-			return ;
-		memcpy(message, client->recv_buffer, message_length);
-		message[message_length] = '\0';
-		handle_message(server, client->fd, message);
-		free(message);
-		client = find_client(server, fd);
-		if (!client)
-			return ;
-		memmove(client->recv_buffer,
-			client->recv_buffer + message_length,
-			client->recv_size - message_length);
-		client->recv_size -= message_length;
-		client->recv_buffer[client->recv_size] = '\0';
-	}
-}
-
 
 void	remove_client(t_server *server, const int fd)
 {
@@ -132,6 +88,8 @@ void	remove_client(t_server *server, const int fd)
 	memcpy(nickname, client->nickname, sizeof(nickname));
 	FD_CLR(fd, &server->readfds);
 	FD_CLR(fd, &server->active);
+	FD_CLR(fd, &server->writefds);
+	FD_CLR(fd, &server->active_write);
 	close(fd);
 	if (fd == server->max_fd)
 	{
@@ -140,6 +98,44 @@ void	remove_client(t_server *server, const int fd)
 	}
 	remove_from_list(server, client);
 	update_timestamp(server);
-	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s Goodbye client %s! (id %lu)\n", server->timestamp, nickname[0] ? nickname : "(unnamed)", client_id);
+	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s Goodbye %s!\n", server->timestamp, nickname[0] ? nickname : "(unnamed)");
 	broadcast(server, -1);
+}
+
+void    handle_write(t_server *server, const int fd)
+{
+    t_client	*client;
+    ssize_t		bytes_sent;
+
+    client = find_client(server, fd);
+    if (!client)
+        return ;
+    else if (!client->send_buffer || !client->send_buffer_size)
+    {
+        FD_CLR(fd, &server->writefds);
+        FD_CLR(fd, &server->active_write);
+        return ;
+    }
+    bytes_sent = send(fd, client->send_buffer, client->send_buffer_size, 0);
+    switch (bytes_sent)
+    {
+        case (-1):
+            if (errno ^ EINTR && errno ^ EAGAIN && errno ^ EWOULDBLOCK)
+                remove_client(server, fd);
+            return ;
+        case (0):
+            remove_client(server, fd);
+            return ;
+        default:
+            memmove(client->send_buffer, client->send_buffer + bytes_sent, client->send_buffer_size - bytes_sent);
+            client->send_buffer_size -= bytes_sent;
+            if (!client->send_buffer_size)
+            {
+                FD_CLR(fd, &server->writefds);
+                FD_CLR(fd, &server->active_write);
+                free(client->send_buffer);
+                client->send_buffer = NULL;
+                client->send_buffer_size = 0;
+            }
+    }
 }

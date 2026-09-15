@@ -1,5 +1,6 @@
 #include "server.h"
 #include <stdlib.h>
+#include <string.h>
 
 void	add_to_list(t_server *server, t_client *client)
 {
@@ -28,6 +29,7 @@ void	remove_from_list(t_server *server, t_client *client)
 		return ;
 	*current = client->next;
 	free(client->message);
+	free(client->send_buffer);
 	free(client);
 }
 

@@ -8,13 +8,16 @@ t_error	run_(t_server *server)
 {
 	FD_ZERO(&server->readfds);
 	FD_ZERO(&server->active);
+	FD_ZERO(&server->writefds);
+	FD_ZERO(&server->active_write);
 	FD_SET(server->socket, &server->active);
 	server->max_fd = server->socket;
 	setup_signals();
 	while (!*server->stop)
 	{
 		server->readfds = server->active;
-		if (select(server->max_fd + 1, &server->readfds, 0, 0, 0) < 0)
+		server->writefds = server->active_write;
+		if (select(server->max_fd + 1, &server->readfds, &server->writefds, 0, 0) < 0)
 		{
 			if (errno == EINTR)
 				continue ;
@@ -39,5 +42,7 @@ static void	process_fds(t_server *server)
 			else
 				accept_new_client(server);
 		}
+		if (FD_ISSET(fd, &server->writefds))
+			handle_write(server, fd);
 	}
 }

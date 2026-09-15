@@ -5,43 +5,21 @@
 
 void	broadcast(t_server *server, const int except)
 {
+	t_client		*client;
 	const size_t	message_length = strlen(server->log_buffer);
-	int				to_remove[FD_SETSIZE];
-	int				remove_count;
-	ssize_t			sent;
-	size_t			total_sent;
+	t_client_error	error;
 
-	remove_count = 0;
-	for (int fd = 0; fd <= server->max_fd; ++fd)
+	client = server->head;
+	while (client)
 	{
-		if (fd ^ server->socket && fd ^ except && FD_ISSET(fd, &server->active))
+		if (client->fd ^ except)
 		{
-			total_sent = 0;
-			while (total_sent < message_length)
-			{
-				sent = send(fd, server->log_buffer + total_sent, message_length - total_sent, MSG_NOSIGNAL);
-				if (sent < 0)
-				{
-					if (errno ^ EINTR && remove_count < FD_SETSIZE)
-					{
-						to_remove[remove_count] = fd;
-						++remove_count;
-					}
-					break ;
-				}
-				if (!sent)
-				{
-					if (remove_count < FD_SETSIZE)
-					{
-						to_remove[remove_count] = fd;
-						++remove_count;
-					}
-				}
-				total_sent += (size_t)sent;
-			}
-			
+			error = append_to_send_buffer(server, client->fd, server->log_buffer, message_length);
+			if (error == CLIENT_ERR_NONE)
+				FD_SET(client->fd, &server->active_write);
+			else if (error == CLIENT_ERR_EXCEEDS_MAX_LENGTH)
+				remove_client(server, client->fd);
 		}
+		client = client->next;
 	}
-	for (int i = 0; i < remove_count; ++i)
-		remove_client(server, to_remove[i]);
 }

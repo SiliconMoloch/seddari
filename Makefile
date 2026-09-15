@@ -11,6 +11,8 @@ SOURCES         := \
                    $(SOURCES_DIR)client.c \
                    $(SOURCES_DIR)client_utils.c \
                    ${SOURCES_DIR}client_commands.c \
+                   ${SOURCES_DIR}recv_utils.c \
+                   ${SOURCES_DIR}send_utils.c \
                    $(SOURCES_DIR)message.c \
                    $(SOURCES_DIR)time.c \
                    $(SOURCES_DIR)broadcast.c \
@@ -30,9 +32,10 @@ DEPS_DIR        := .deps/
 OBJECTS         := $(patsubst $(SOURCES_DIR)%.c,$(OBJECTS_DIR)%.o,$(SOURCES))
 DEPS            := $(patsubst $(SOURCES_DIR)%.c,$(DEPS_DIR)%.d,$(SOURCES))
 
-NAME            := seddari
-CC              := cc
-CC_FLAGS        := -Wall -Wextra -Werror -I$(HEADERS_DIR)
+NAME            := 	seddari
+CC              := 	cc
+CC_FLAGS        := 	-Wall -Wextra -Werror -I$(HEADERS_DIR)
+FSAN_ADDR_FLAG	:=	-fsanitize=address
 
 .PHONY: all clean fclean re
 
@@ -45,6 +48,10 @@ $(OBJECTS_DIR)%.o: $(SOURCES_DIR)%.c | $(OBJECTS_DIR) $(DEPS_DIR)
 
 $(NAME): $(OBJECTS) $(HEADERS)
 	@$(CC) $(CC_FLAGS) $(OBJECTS) -o $(NAME)
+	@echo "$(NAME) has been successfully generated."
+
+fsan_addr: $(OBJECTS) $(HEADERS)
+	@$(CC) $(CC_FLAGS) ${FSAN_ADDR_FLAG} $(OBJECTS) -o $(NAME)
 	@echo "$(NAME) has been successfully generated."
 
 $(OBJECTS_DIR) $(DEPS_DIR):
