@@ -6,6 +6,9 @@
 #include "signals.h"
 #include <stdbool.h>
 
+#define SEND_BUFFER_LIMIT_SIZE 65536
+#define MAX_MSG_PER_SEC 10
+
 typedef struct s_server
 {
 	volatile sig_atomic_t				*stop;

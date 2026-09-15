@@ -14,8 +14,13 @@ t_client_error	rate_limit_exceeded(t_client *client)
 {
 	const time_t	now = time(NULL);
 
-	if (difftime(now, client->last_activity) < 0.1)
+	if (now ^ client->msg_count_start)
+	{
+		client->msg_count_start = now;
+		client->msg_count_in_sec = 0;
+	}
+	++client->msg_count_in_sec;
+	if (client->msg_count_in_sec > MAX_MSG_PER_SEC)
 		return (CLIENT_ERR_EXCEEDS_RATE_LIMIT);
-	client->last_activity = now;
 	return (CLIENT_ERR_NONE);
 }

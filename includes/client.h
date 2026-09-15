@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <netinet/ip.h>
-#define SEND_BUFFER_LIMIT_SIZE 65536
+
 #define MAX_NICKNAME_SIZE 32
 
 typedef struct s_client
@@ -18,7 +18,8 @@ typedef struct s_client
 	char			recv_buffer[256];
 	size_t			recv_size;
 	char			nickname[MAX_NICKNAME_SIZE];
-	time_t			last_activity;
+	time_t			msg_count_start;
+	uint64_t		msg_count_in_sec;
 	struct s_client	*next;
 }	t_client;
 
