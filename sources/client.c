@@ -66,6 +66,12 @@ void	handle_client(t_server *server, const int fd)
 			client = find_client(server, fd);
 			if (!client)
 				return ;
+			if (rate_limit_exceeded(client) ^ CLIENT_ERR_NONE)
+			{
+				snprintf(server->log_buffer, sizeof(server->log_buffer), "Client %lu exceeded rate limit\n", client->id);
+				remove_client(server, fd);
+				return ;
+			}
 			if (append_to_recv_buffer(client, buffer, bytes_received))
 			{
 				remove_client(server, fd);

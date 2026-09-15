@@ -18,9 +18,11 @@ typedef struct s_client
 	char			recv_buffer[256];
 	size_t			recv_size;
 	char			nickname[MAX_NICKNAME_SIZE];
+	time_t			last_activity;
 	struct s_client	*next;
 }	t_client;
 
 t_client_error	set_non_blocking_client(const int fd);
+t_client_error	rate_limit_exceeded(t_client *client);
 
 #endif
