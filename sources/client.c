@@ -37,13 +37,14 @@ void	accept_new_client(t_server *server)
 		free(new_client);
 		return ;
 	}
-	update_timestamp(server);
 	if (new_client->fd > server->max_fd)
 		server->max_fd = new_client->fd;
 	FD_SET(new_client->fd, &server->active);
 	new_client->id = server->next_id++;
 	new_client->next = NULL;
 	add_to_list(server, new_client);
+	snprintf(new_client->nickname, sizeof(new_client->nickname), "Client %lu", new_client->id);
+	update_timestamp(server);
 	snprintf(server->buffer, sizeof(server->buffer), "%s Welcome client %lu!\n",server->timestamp, new_client->id);
 	broadcast(server, -1);
 }

@@ -7,9 +7,9 @@ t_error	create_socket(t_server *server)
 	int	opt;
 
 	server->socket = socket(AF_INET, SOCK_STREAM, 0);
-	opt = 1;
 	if (server->socket ^ -1)
 	{
+		opt = 1;
 		if (setsockopt(server->socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 		{
 			server->errno_code = errno;

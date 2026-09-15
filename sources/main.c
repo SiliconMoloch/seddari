@@ -14,6 +14,7 @@ int	main(int argc, const char *argv[])
 	switch (server_start(&server))
 	{
 		case (ERR_NONE):
+			printf("Goodbye!\n");
 			return (0);
 		case (ERR_SOCKET):
 			dprintf(2, ERROR_SOCKET_MSG, strerror(server.errno_code));
