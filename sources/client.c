@@ -88,13 +88,11 @@ void	handle_client(t_server *server, const int fd)
 void	remove_client(t_server *server, const int fd)
 {
 	t_client	*client;
-	uint64_t	client_id;
 	char		nickname[32];
 
 	client = find_client(server, fd);
 	if (!client)
 		return ;
-	client_id = client->id;
 	memcpy(nickname, client->nickname, sizeof(nickname));
 	FD_CLR(fd, &server->readfds);
 	FD_CLR(fd, &server->active);
