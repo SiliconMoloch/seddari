@@ -1,0 +1,34 @@
+name: tests
+
+on:
+ push:
+
+jobs:
+ test:
+  runs-on: ubuntu-latest
+
+  steps:
+   - name: fetch code
+     uses: actions/checkout@v4
+
+   - name: check for clang
+     run: clang -v
+
+   - name: check for make
+     run: make -v
+
+   - name: check for valgrind
+     run: valgrind --version
+
+   - name: compile
+     run: make
+
+   - name: run tests
+     run: |
+      VALGRIND_OPTIONS="--leak-check=full --show-leak-kinds=all --track-fds=yes     --errors-for-leak-kinds=all --error-exitcode=1"
+      HELP_FLAG="-h"
+      HELP_FLAG2="--help"
+      echo "Test 1 - $HELP_FLAG" >> outputs.txt
+      valgrind $VALGRIND_OPTIONS ./seddari $HELP_FLAG
+      echo "Test 2 - $HELP_FLAG" >> outputs.txt
+      valgrind $VALGRIND_OPTIONS ./seddari $HELP_FLAG2
