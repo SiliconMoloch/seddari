@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 
-void    putchar(const char c)
+void    ft_putchar(const char c)
 {
     write(1, &c, 1);
 }
