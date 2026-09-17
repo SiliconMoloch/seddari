@@ -1,4 +1,5 @@
 #include "server.h"
+#include "utils.h"
 #include <errno.h>
 #include <unistd.h>
 
@@ -6,12 +7,10 @@ static void	process_fds(t_server *server);
 
 t_error	run_(t_server *server)
 {
-	FD_ZERO(&server->readfds);
-	FD_ZERO(&server->active);
-	FD_ZERO(&server->writefds);
-	FD_ZERO(&server->active_write);
 	FD_SET(server->socket, &server->active);
-	server->max_fd = server->socket;
+	if (server->metrics_mode)
+		FD_SET(server->metrics_socket, &server->active);
+	server->max_fd = (server->socket > server->metrics_socket) ? server->socket : server->metrics_socket;
 	setup_signals();
 	set_server_start_time(server);
 	server->metrics.stop = (bool *)server->stop;
@@ -31,6 +30,8 @@ t_error	run_(t_server *server)
 				continue ;
 			server->errno_code = errno;
 			close(server->socket);
+			if (server->metrics_mode)
+				close(server->metrics_socket);
 			return (ERR_SELECT);
 		}
 		process_fds(server);
@@ -41,14 +42,21 @@ t_error	run_(t_server *server)
 
 static void	process_fds(t_server *server)
 {
+	bool	is_socket;
+	bool	is_metrics_socket;
+
 	for (int fd = 0; fd <= server->max_fd; ++fd)
 	{
 		if (FD_ISSET(fd, &server->readfds))
 		{
-			if (fd ^ server->socket)
+			is_socket = (fd == server->socket);
+			is_metrics_socket = (server->metrics_mode && (fd == server->metrics_socket));
+			if (!is_socket && !is_metrics_socket)
 				handle_client(server, fd);
-			else
+			else if (!is_metrics_socket)
 				accept_new_client(server);
+			else
+				;
 		}
 		if (FD_ISSET(fd, &server->writefds))
 			handle_write(server, fd);

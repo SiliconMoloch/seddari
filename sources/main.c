@@ -10,6 +10,7 @@ int	main(int argc, const char *argv[])
 	server.ip = htonl(0x7F000001);
 	server.port = 8080;
 	handle_arguments(&server, argc, argv);
+	server.metrics_mode = (bool)server.metrics_port;
 	server.stop = &g_stop;
 	switch (server_start(&server))
 	{

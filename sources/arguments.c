@@ -5,17 +5,18 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 
-void        handle_arguments(t_server *server, int argc, const char *argv[]);
+void            handle_arguments(t_server *server, int argc, const char *argv[]);
 
-static bool help_option(const char *arg);
-static bool address_option(const char *arg);
-static bool port_option(const char *arg);
-static bool print_metrics_option(const char *arg);
+static bool     help_option(const char *arg);
+static bool     address_option(const char *arg);
+static bool     port_option(const char *arg);
+static bool     metrics_option(const char *arg);
+static bool     print_metrics_option(const char *arg);
 
-static void print_help(const char *program_name);
-static void handle_address_option(t_server *server, const char *arg);
-static void handle_port_option(t_server *server, const char *arg);
-static void handle_unknown_option(const char *arg);
+static void     print_help(const char *program_name);
+static void     handle_address_option(t_server *server, const char *arg);
+static uint16_t get_port(const char *arg);
+static void     handle_unknown_option(const char *arg);
 
 void    handle_arguments(t_server *server, int argc, const char *argv[])
 {
@@ -26,7 +27,9 @@ void    handle_arguments(t_server *server, int argc, const char *argv[])
         else if (address_option(argv[i]))
             handle_address_option(server, argv[++i]);
         else if (port_option(argv[i]))
-            handle_port_option(server, argv[++i]);
+            server->port = get_port(argv[++i]);
+        else if (metrics_option(argv[i]))
+            server->metrics_port = get_port(argv[++i]);
         else if (print_metrics_option(argv[i]))
             server->print_metrics = true;
         else
@@ -49,6 +52,11 @@ static bool port_option(const char *arg)
     return (!strcmp(arg, "-p") || !strcmp(arg, "--port"));
 }
 
+static bool metrics_option(const char *arg)
+{
+    return (!strcmp(arg, "-m") || !strcmp(arg, "--metrics"));
+}
+
 static bool print_metrics_option(const char *arg)
 {
     return (!strcmp(arg, "-pm") || !strcmp(arg, "--print_metrics"));
@@ -58,10 +66,11 @@ static void print_help(const char *program_name)
 {
     printf("Usage: %s [OPTIONS]\n", program_name);
     printf("Options:\n");
-    printf("    -h, --help              Show this help message and exit\n");
-    printf("    -a, --address           Set the IP address (default: 127.0.0.1)\n");
-    printf("    -p, --port              Set the port (default: 8080)\n");
-    printf("    -pm, --print_metrics    Print metrics on the standard output (at each update)\n");
+    printf("    -h, --help                                Show this help message and exit\n");
+    printf("    -a, --address           <address>         Set the IP address (default: 127.0.0.1)\n");
+    printf("    -p, --port              <port>            Set the port (default: 8080)\n");
+    printf("    -m, --metrics           <port>            Enables the metrics listening \n");
+    printf("    -pm, --print_metrics                      Print metrics on the standard output (at each update)\n");
     exit(0);
 }
 
@@ -84,11 +93,11 @@ static void handle_address_option(t_server *server, const char *arg)
     }
 }
 
-static void handle_port_option(t_server *server, const char *arg)
+static uint16_t get_port(const char *arg)
 {
     if (!arg || !*arg)
     {
-        fprintf(stderr, "Port number is required after -p or --port\n");
+        fprintf(stderr, "Port number is required\n");
         exit(1);
     }
 
@@ -100,7 +109,7 @@ static void handle_port_option(t_server *server, const char *arg)
         fprintf(stderr, "Invalid port number: %s\n", arg);
         exit(1);
     }
-    server->port = (uint16_t)port;
+    return ((uint16_t) port);
 }
 
 static void handle_unknown_option(const char *arg)
