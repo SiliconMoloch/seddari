@@ -1,7 +1,7 @@
 SOURCES_DIR     := sources/
 SOURCES         := \
                    $(SOURCES_DIR)main.c \
-                   $(SOURCES_DIR)arguments.c \
+                   $(SOURCES_DIR)options.c \
                    $(SOURCES_DIR)start.c \
                    $(SOURCES_DIR)initialize_server.c \
                    $(SOURCES_DIR)socket.c \
