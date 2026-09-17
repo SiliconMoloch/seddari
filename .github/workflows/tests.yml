@@ -11,14 +11,14 @@ jobs:
    - name: fetch code
      uses: actions/checkout@v4
 
-   - name: check for clang
-     run: clang -v
+   - name: install Valgrind
+   - run: sudo apt-get update && sudo apt-get install -y valgrind
 
-   - name: check for make
-     run: make -v
-
-   - name: check for valgrind
-     run: valgrind --version
+   - name: check for tools
+   - run: |
+      clang -v
+      make -v
+      valgrind --version
 
    - name: compile
      run: make
