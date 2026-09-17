@@ -33,17 +33,17 @@ uint64_t metrics_count;
 
 void    print_metrics(t_metrics metrics)
 {
-    putstr("Print metrics "); putnbr(++metrics_count); putchar('\n');
-    putstr("Connections: "); putnbr(metrics.number_of_connections); putchar('\n');
-    putstr("Disconnections: "); putnbr(metrics.number_of_disconnections); putchar('\n');
-    putstr("Successful recv() calls: "); putnbr(metrics.successful_recv_calls); putchar('\n');
-    putstr("Bytes recevied: "); putnbr(metrics.bytes_received); putchar('\n');
-    putstr("Complete messages received: "); putnbr(metrics.complete_messages_received); putchar('\n');
-    putstr("Successful send() calls: "); putnbr(metrics.successful_send_calls); putchar('\n');
-    putstr("Bytes sent: "); putnbr(metrics.bytes_sent); putchar('\n');
-    putstr("Command help: "); putnbr(metrics.command_help_count); putchar('\n');
-    putstr("Command nick: "); putnbr(metrics.command_nick_count); putchar('\n');
-    putstr("Command list: "); putnbr(metrics.command_list_count); putchar('\n');
-    putstr("Command quit: "); putnbr(metrics.command_quit_count); putchar('\n');
-    putchar('\n');
+    putstr("Print metrics "); putnbr(++metrics_count); ft_putchar('\n');
+    putstr("Connections: "); putnbr(metrics.number_of_connections); ft_putchar('\n');
+    putstr("Disconnections: "); putnbr(metrics.number_of_disconnections); ft_putchar('\n');
+    putstr("Successful recv() calls: "); putnbr(metrics.successful_recv_calls); ft_putchar('\n');
+    putstr("Bytes recevied: "); putnbr(metrics.bytes_received); ft_putchar('\n');
+    putstr("Complete messages received: "); putnbr(metrics.complete_messages_received); ft_putchar('\n');
+    putstr("Successful send() calls: "); putnbr(metrics.successful_send_calls); ft_putchar('\n');
+    putstr("Bytes sent: "); putnbr(metrics.bytes_sent); ft_putchar('\n');
+    putstr("Command help: "); putnbr(metrics.command_help_count); ft_putchar('\n');
+    putstr("Command nick: "); putnbr(metrics.command_nick_count); ft_putchar('\n');
+    putstr("Command list: "); putnbr(metrics.command_list_count); ft_putchar('\n');
+    putstr("Command quit: "); putnbr(metrics.command_quit_count); ft_putchar('\n');
+    ft_putchar('\n');
 }

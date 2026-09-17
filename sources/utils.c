@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 
-void    putchar(const char c)
+void    ft_putchar(const char c)
 {
     write(1, &c, 1);
 }
@@ -13,7 +13,7 @@ void    putnbr(uint64_t n)
         putnbr(n / 10);
     
     const char digit = (n % 10) + '0';
-    putchar(digit);
+    ft_putchar(digit);
 }
 
 void    putstr(const char *s)
