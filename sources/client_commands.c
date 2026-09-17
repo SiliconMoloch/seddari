@@ -17,21 +17,25 @@ t_command_status    handle_commands(t_server *server, t_client *client)
     if (!strncmp(client->message, "/help", 5) && command_terminated(client->message[5], end_characters))
     {
         handle_help_command(server, client);
+        ++server->metrics.command_help_count;
         return (CMD_STATUS_HELP_SENT);
     }
     else if (!strncmp(client->message, "/nick ", 6))
     {
         handle_nick_command(server, client);
+        ++server->metrics.command_nick_count;
         return (CMD_STATUS_NICKNAME_CHANGED);
     }
     else if (!strncmp(client->message, "/list", 5) && command_terminated(client->message[5], end_characters))
     {
         handle_list_command(server, client);
+        ++server->metrics.command_list_count;
         return (CMD_STATUS_CLIENT_LIST_SENT);
     }
     else if (!strncmp(client->message, "/quit", 5) && command_terminated(client->message[5], end_characters))
     {
         handle_quit_command(server, client);
+        ++server->metrics.command_quit_count;
         return (CMD_STATUS_CLIENT_QUIT);
     }
     return (CMD_STATUS_NONE);

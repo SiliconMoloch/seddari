@@ -17,6 +17,8 @@ SOURCES         := \
                    $(SOURCES_DIR)time.c \
                    $(SOURCES_DIR)broadcast.c \
                    $(SOURCES_DIR)signals.c \
+                   ${SOURCES_DIR}metrics.c   \
+                   ${SOURCES_DIR}utils.c    \
                    $(SOURCES_DIR)release_resources.c
 
 HEADERS_DIR     := includes/

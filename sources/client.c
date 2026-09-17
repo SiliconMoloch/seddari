@@ -42,6 +42,7 @@ void	accept_new_client(t_server *server)
 	new_client->next = NULL;
 	add_to_list(server, new_client);
 	snprintf(new_client->nickname, sizeof(new_client->nickname), "Client %lu", new_client->id);
+	++server->metrics.number_of_connections;
 	update_timestamp(server);
 	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s Welcome client %lu!\n",server->timestamp, new_client->id);
 	broadcast(server, -1);
@@ -60,9 +61,12 @@ void	handle_client(t_server *server, const int fd)
 				remove_client(server, fd);
 			return ;
 		case (0):
+			++server->metrics.successful_recv_calls;
 			remove_client(server, fd);
 			return ;
 		default:
+			++server->metrics.successful_recv_calls;
+			server->metrics.bytes_received += bytes_received;
 			client = find_client(server, fd);
 			if (!client)
 				return ;
@@ -103,6 +107,7 @@ void	remove_client(t_server *server, const int fd)
 			--server->max_fd;
 	}
 	remove_from_list(server, client);
+	++server->metrics.number_of_disconnections;
 	update_timestamp(server);
 	snprintf(server->log_buffer, sizeof(server->log_buffer), "%s Goodbye %s!\n", server->timestamp, nickname[0] ? nickname : "(unnamed)");
 	broadcast(server, -1);
@@ -130,9 +135,12 @@ void    handle_write(t_server *server, const int fd)
                 remove_client(server, fd);
             return ;
         case (0):
+			++server->metrics.successful_send_calls;
             remove_client(server, fd);
             return ;
         default:
+			++server->metrics.successful_send_calls;
+			server->metrics.bytes_sent += bytes_sent;
             memmove(client->send_buffer, client->send_buffer + bytes_sent, client->send_buffer_size - bytes_sent);
             client->send_buffer_size -= bytes_sent;
             if (!client->send_buffer_size)

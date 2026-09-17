@@ -5,6 +5,8 @@
 
 void	broadcast(t_server *server, const int except)
 {
+	++server->metrics.complete_messages_received;
+
 	t_client		*client;
 	const size_t	message_length = strlen(server->log_buffer);
 	t_client_error	error;

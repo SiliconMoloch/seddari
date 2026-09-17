@@ -10,6 +10,7 @@ void        handle_arguments(t_server *server, int argc, const char *argv[]);
 static bool help_option(const char *arg);
 static bool address_option(const char *arg);
 static bool port_option(const char *arg);
+static bool print_metrics_option(const char *arg);
 
 static void print_help(const char *program_name);
 static void handle_address_option(t_server *server, const char *arg);
@@ -26,6 +27,8 @@ void    handle_arguments(t_server *server, int argc, const char *argv[])
             handle_address_option(server, argv[++i]);
         else if (port_option(argv[i]))
             handle_port_option(server, argv[++i]);
+        else if (print_metrics_option(argv[i]))
+            server->print_metrics = true;
         else
             handle_unknown_option(argv[i]);
     }
@@ -46,13 +49,19 @@ static bool port_option(const char *arg)
     return (!strcmp(arg, "-p") || !strcmp(arg, "--port"));
 }
 
+static bool print_metrics_option(const char *arg)
+{
+    return (!strcmp(arg, "-pm") || !strcmp(arg, "--print_metrics"));
+}
+
 static void print_help(const char *program_name)
 {
     printf("Usage: %s [OPTIONS]\n", program_name);
     printf("Options:\n");
-    printf("  -h, --help     Show this help message and exit\n");
-    printf("  -a, --address  Set the IP address (default: 127.0.0.1)\n");
-    printf("  -p, --port     Set the port (default: 8080)\n");
+    printf("    -h, --help              Show this help message and exit\n");
+    printf("    -a, --address           Set the IP address (default: 127.0.0.1)\n");
+    printf("    -p, --port              Set the port (default: 8080)\n");
+    printf("    -pm, --print_metrics    Print metrics on the standard output (at each update)\n");
     exit(0);
 }
 

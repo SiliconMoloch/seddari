@@ -4,6 +4,7 @@
 #include "status.h"
 #include "client.h"
 #include "signals.h"
+#include "metrics.h"
 #include <stdbool.h>
 
 #define SEND_BUFFER_LIMIT_SIZE 65536
@@ -26,6 +27,9 @@ typedef struct s_server
 	uint16_t							port;
 	char								timestamp[22];
 	char								log_buffer[256];
+	t_metrics							last_metrics;
+	t_metrics							metrics;
+	bool								print_metrics;
 }	t_server;
 
 t_error			server_start(t_server *server);
@@ -37,6 +41,7 @@ t_error			set_passive_socket(t_server *server);
 t_error			set_non_blocking_server(const int fd, uint16_t *errno_code);
 t_error			handle_commands(t_server *server, t_client *client);
 void			handle_arguments(t_server *server, int argc, const char *argv[]);
+void			set_server_start_time(t_server *server);
 void			update_timestamp(t_server *server);
 void			accept_new_client(t_server *server);
 void			handle_client(t_server *server, const int fd);
@@ -51,5 +56,6 @@ void			add_to_list(t_server *server, t_client *client);
 void			remove_from_list(t_server *server, t_client *client);
 void			release_resources(t_server *server);
 t_client		*find_client(t_server *server, const int fd);
+
 
 #endif

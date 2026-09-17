@@ -13,8 +13,16 @@ t_error	run_(t_server *server)
 	FD_SET(server->socket, &server->active);
 	server->max_fd = server->socket;
 	setup_signals();
+	set_server_start_time(server);
+	server->metrics.stop = (bool *)server->stop;
 	while (!*server->stop)
 	{
+		if (metrics_updated(server->last_metrics, server->metrics))
+		{
+			server->last_metrics = server->metrics;
+			if (server->print_metrics)
+				print_metrics(server->metrics);
+		}
 		server->readfds = server->active;
 		server->writefds = server->active_write;
 		if (select(server->max_fd + 1, &server->readfds, &server->writefds, 0, 0) < 0)

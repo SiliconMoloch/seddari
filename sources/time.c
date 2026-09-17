@@ -1,10 +1,20 @@
 #include <time.h>
 #include "server.h"
 
+void	set_server_start_time(t_server *server)
+{
+	struct tm		*time_info;
+	const time_t	now = time(NULL);
+
+	time_info = localtime(&now);
+	server->metrics.start_time = time(NULL);
+	strftime(server->timestamp, sizeof(server->timestamp), "[%d/%m/%Y %H:%M:%S]", time_info);
+}
+
 void	update_timestamp(t_server *server)
 {
-	const time_t	now = time(NULL);
 	struct tm		*time_info;
+	const time_t	now = time(NULL);
 
 	time_info = localtime(&now);
 	strftime(server->timestamp, sizeof(server->timestamp), "[%d/%m/%Y %H:%M:%S]", time_info);

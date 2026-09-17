@@ -6,7 +6,7 @@ int	main(int argc, const char *argv[])
 {
 	t_server	server;
 
-	bzero(&server, sizeof(t_server));
+	memset(&server, 0, sizeof(t_server));
 	server.ip = htonl(0x7F000001);
 	server.port = 8080;
 	handle_arguments(&server, argc, argv);
