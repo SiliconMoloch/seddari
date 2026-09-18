@@ -2,9 +2,9 @@ from pathlib import Path
 import subprocess
 
 name = "seddari"
-exe_path = "../seddari"
+exe_path = "./seddari"
 
-tests_main_dir = Path("cases")
+tests_main_dir = Path("tests_cases")
 tests_main_dir.mkdir(parents=True, exist_ok=True)
 
 non_interactive_tests = {

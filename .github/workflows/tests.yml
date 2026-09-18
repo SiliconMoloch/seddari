@@ -25,7 +25,7 @@ jobs:
 
    - name: run non interactive tests
      run: |
-      CASES_PATH="tests/cases"
+      CASES_PATH="tests_cases"
       ./seddari unknown   2> "$CASES_PATH/unknown/compare.out"        || true
       ./seddari -a        2> "$CASES_PATH/address-short/compare.out"  || true
       ./seddari --address 2> "$CASES_PATH/address-long/compare.out"   || true
