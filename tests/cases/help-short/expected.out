@@ -1,0 +1,7 @@
+Usage: ../seddari [OPTIONS]
+Options:
+    -h, --help                                Show this help message and exit
+    -a, --address           <address>         Set the IP address (default: 127.0.0.1)
+    -p, --port              <port>            Set the port (default: 8080)
+    -m, --metrics           <port>            Enables the metrics listening 
+    -pm, --print_metrics                      Print metrics on the standard output (at each update)
