@@ -23,12 +23,28 @@ jobs:
    - name: compile
      run: make
 
+   - name: run non interactive tests
+     run: |
+      CASES_PATH="tests/cases"
+      ./seddari unknown   2> "$CASES_PATH/unknown/compare.out"        || true
+      ./seddari -a        2> "$CASES_PATH/address-short/compare.out"  || true
+      ./seddari --address 2> "$CASES_PATH/address-long/compare.out"   || true
+      ./seddari -p        2> "$CASES_PATH/port-short/compare.out"     || true
+      ./seddari --port    2> "$CASES_PATH/port-long/compare.out"      || true
+      ./seddari -h        >  "$CASES_PATH/help-short/compare.out"
+      ./seddari --help    >  "$CASES_PATH/help-long/compare.out"
+      for case_dir in "$CASES_PATH"/*; do
+        echo "Testing $case_dir"
+        diff -u "$case_dir/expected.out" "$case_dir/compare.out"
+      done
+
    - name: run tests
      run: |
-      VALGRIND_OPTIONS="--leak-check=full --show-leak-kinds=all --track-fds=yes     --errors-for-leak-kinds=all --error-exitcode=1"
-      HELP_FLAG="-h"
-      HELP_FLAG2="--help"
-      echo "Test 1 - $HELP_FLAG" >> outputs.txt
-      valgrind $VALGRIND_OPTIONS ./seddari $HELP_FLAG
-      echo "Test 2 - $HELP_FLAG" >> outputs.txt
-      valgrind $VALGRIND_OPTIONS ./seddari $HELP_FLAG2
+      VALGRIND_OPTIONS="--leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1"
+      valgrind $VALGRIND_OPTIONS ./seddari unknown
+      valgrind $VALGRIND_OPTIONS ./seddari -h
+      valgrind $VALGRIND_OPTIONS ./seddari --help
+      valgrind $VALGRIND_OPTIONS ./seddari -a
+      valgrind $VALGRIND_OPTIONS ./seddari --address
+      valgrind $VALGRIND_OPTIONS ./seddari -p
+      valgrind $VALGRIND_OPTIONS ./seddari --port
