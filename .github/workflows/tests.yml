@@ -41,10 +41,20 @@ jobs:
    - name: run tests
      run: |
       VALGRIND_OPTIONS="--leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1"
-      valgrind $VALGRIND_OPTIONS ./seddari unknown
-      valgrind $VALGRIND_OPTIONS ./seddari -h
-      valgrind $VALGRIND_OPTIONS ./seddari --help
-      valgrind $VALGRIND_OPTIONS ./seddari -a
-      valgrind $VALGRIND_OPTIONS ./seddari --address
-      valgrind $VALGRIND_OPTIONS ./seddari -p
-      valgrind $VALGRIND_OPTIONS ./seddari --port
+      run_valgrind_test() {
+       expected_status="$1"
+       shift
+       valgrind $VALGRIND_OPTIONS "$@"
+       actual_status=$?
+       if [ "$actual_status" -ne "$expected_status" ]; then
+         echo "Expected exit code $expected_status, got $actual_status"
+         return 1
+       fi
+       }
+      run_valgrind_test 1 ./seddari unknown
+      run_valgrind_test 0 ./seddari -h
+      run_valgrind_test 0 ./seddari --help
+      run_valgrind_test 1 ./seddari -a        
+      run_valgrind_test 1 ./seddari --address 
+      run_valgrind_test 1 ./seddari -p        
+      run_valgrind_test 1 ./seddari --port    
