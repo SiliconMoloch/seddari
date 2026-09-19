@@ -40,12 +40,16 @@ jobs:
 
    - name: run tests
      run: |
-      VALGRIND_OPTIONS="--leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1"
+      VALGRIND_OPTIONS="--leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=99"
       run_valgrind_test() {
        expected_status="$1"
        shift
-       valgrind $VALGRIND_OPTIONS "$@"
-       actual_status=$?
+       actual_status=0
+       valgrind $VALGRIND_OPTIONS --log-file=valgrind.log "$@" || actual_status=$?
+       if [ "$actual_status" -eq 99 ]; then
+         cat valgrind.log
+         return 1
+       fi
        if [ "$actual_status" -ne "$expected_status" ]; then
          echo "Expected exit code $expected_status, got $actual_status"
          return 1
